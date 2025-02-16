@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UAP CSE Picnic 2025</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #4F46E5;
+      --secondary: #059669;
+      --danger: #DC2626;
+      --background: #F3F4F6;
+      --text: #111827;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+    }
+
+    .app-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .header::before {
+      content: '🎉';
+      position: absolute;
+      right: 2rem;
+      top: 2rem;
+      font-size: 2rem;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--background);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+
+    .seats-left {
+      color: var(--danger);
+    }
+
+    .time-left {
+      color: var(--secondary);
+    }
+
+    .form-container {
+      padding: 1.5rem;
+    }
+
+    .form-iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 3px solid var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      animation: confetti-fall 3s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100vh) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        padding: 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-iframe {
+        height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <h1>UAP CSE Picnic 2025</h1>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h2>Seats Remaining</h2>
+        <div id="seats-count" class="stat-value seats-left">
+          <div class="loading"></div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <h2>Registration Closes In</h2>
+        <div id="time-remaining" class="stat-value time-left">
+          <div class="loading"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <iframe
+        class="form-iframe"
+        src="https://docs.google.com/forms/d/e/1FAIpQLSf3GtK65lZrwYFF1R2EIl5t5ffMlgHSa36Ebxtyo3XMYT-vdA/viewform?embedded=true">
+        Loading...
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    class PicnicApp {
+      constructor() {
+        this.SHEET_ID = '1T5xPD6bMuzIQZPEMX0N9AXktDGh-7uguoNcXZ_ih5XA';
+        this.SHEET_NAME = 'Form Responses 1';
+        this.DEADLINE = new Date('2025-02-23T16:00:00').getTime();
+        this.seatsElement = document.getElementById('seats-count');
+        this.timeElement = document.getElementById('time-remaining');
+
+        this.init();
+      }
+
+      async init() {
+        this.startTimeUpdate();
+        await this.fetchSeats();
+        this.startSeatsUpdate();
+        this.setupFormListener();
+      }
+
+      async fetchSeats() {
+        try {
+          const response = await fetch(
+            `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/gviz/tq?` +
+            `tqx=out:json&sheet=${encodeURIComponent(this.SHEET_NAME)}&range=H1`
+          );
+
+          const text = await response.text();
+          const data = JSON.parse(text.substr(47).slice(0, -2));
+
+          if (data.table?.rows?.[0]?.c?.[0]) {
+            const seats = data.table.rows[0].c[0].v;
+            this.updateSeatsDisplay(seats);
+          }
+        } catch (error) {
+          console.error('Error fetching seats:', error);
+          this.updateSeatsDisplay(700); // Fallback value
+        }
+      }
+
+      updateSeatsDisplay(count) {
+        this.seatsElement.textContent = count;
+        this.seatsElement.classList.add('pulse');
+        setTimeout(() => this.seatsElement.classList.remove('pulse'), 500);
+      }
+
+      updateTimeDisplay() {
+        const now = Date.now();
+        const remaining = this.DEADLINE - now;
+
+        if (remaining <= 0) {
+          this.timeElement.textContent = 'Registration Closed';
+          return;
+        }
+
+        const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+        this.timeElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      createConfetti() {
+        for (let i = 0; i < 50; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          confetti.style.animationDelay = `${Math.random() * 3}s`;
+          document.body.appendChild(confetti);
+
+          setTimeout(() => confetti.remove(), 3000);
+        }
+      }
+
+      setupFormListener() {
+        window.addEventListener('message', (event) => {
+          if (event.origin === 'https://docs.google.com' && event.data === 'formSubmitted') {
+            this.createConfetti();
+            this.fetchSeats();
+          }
+        });
+      }
+
+      startSeatsUpdate() {
+        setInterval(() => this.fetchSeats(), 15000);
+      }
+
+      startTimeUpdate() {
+        this.updateTimeDisplay();
+        setInterval(() => this.updateTimeDisplay(), 1000);
+      }
+    }
+
+    // Initialize the app
+    new PicnicApp();
+  </script>
+</body>
+</html>

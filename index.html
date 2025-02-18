@@ -32,7 +32,7 @@
     }
 
     .header {
-      background: #1a56db;
+      background: rgba(12, 121, 140, 0.56);
       color: white;
       padding: 2rem;
       text-align: center;
@@ -84,13 +84,13 @@
     .seats {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #dc2626;
+      color: rgba(220, 38, 38, 0.76);
     }
 
     .timer {
       font-size: 2rem;
       font-weight: 700;
-      color: #059669;
+      color: rgba(5, 150, 105, 0.82);
     }
 
     .number-animation {
@@ -139,6 +139,24 @@
         height: 500px;
       }
     }
+.registration-counter {
+    top: 20px;
+    right: 20px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 1px solid #dee2e6;
+}
+.counter-number {
+    font-size: -webkit-xxx-large;
+    font-family: monospace;
+    color: rgba(12, 121, 140, 0.56);
+    font-weight: 800;
+}
+
+
   </style>
 </head>
 <body>
@@ -148,7 +166,10 @@
       <h1>Registration Fee BDT 1400 Only! </h1>
 
     </header>
-
+<div id="totalRegistered" class="registration-counter">
+    <h3>Total Registered Students</h3>
+    <div class="counter-number">Loading...</div>
+</div>
     <div class="info-grid">
       <div class="info-card">
         <h2>Seats Available</h2>
@@ -165,7 +186,7 @@
     </div>
 <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
   <br>
-       <h1> Picnic Location: <a href="https://g.co/kgs/xjCX1H7" target="_blank">Shohag Polli Resort</a></h1>
+       <h1> Upgraded Location: <a href="https://g.co/kgs/xjCX1H7" target="_blank">Shohag Polli Resort</a></h1>
 <br>
 <br>
 <br>
@@ -222,6 +243,8 @@
             if (this.lastSeats !== newSeats) {
               this.animateSeats(newSeats);
               this.lastSeats = newSeats;
+              document.querySelector('.counter-number').textContent = 700-this.lastSeats;
+
             }
           }
         } catch (error) {

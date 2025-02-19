@@ -155,6 +155,22 @@
     color: rgba(12, 121, 140, 0.56);
     font-weight: 800;
 }
+.event-button {
+            background-color: rgba(12, 121, 140, 0.56);
+            color: white;
+            font-size: 18px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+        .event-button:hover {
+            background-color: #1257A7;
+        }
 
 
   </style>
@@ -170,13 +186,16 @@
     <h2>Total Registered Students</h2>
     <div class="counter-number">Loading...</div>
         <h6>*Students registered earlier may have early access. </h6>
-
+    <br>
+    <a href="https://facebook.com/events/s/uap-cse-departmental-picnic-20/1959907661201744/" class="event-button" target="_blank">
+        🎈 Join The facebook event of UAP CSE Picnic 2025 🎈
+    </a>
 </div>
     <div class="info-grid">
       <div class="info-card">
         <h2>Seats Left</h2>
         <div id="seats" class="seats"></div>
-        <h2>Registration is down bellow</h2>
+    <a href="#form-section" class="event-button">Register Now</a>
 
       </div>
 
@@ -204,7 +223,7 @@
             <img style="height: 200px; width: 200px" src="qr.png">
       </div>
 
-    <div class="form-container">
+    <div id="form-section" class="form-container">
       <iframe
         class="form-iframe"
         src="https://docs.google.com/forms/d/e/1FAIpQLSf3GtK65lZrwYFF1R2EIl5t5ffMlgHSa36Ebxtyo3XMYT-vdA/viewform?embedded=true">

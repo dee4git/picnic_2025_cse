@@ -171,6 +171,31 @@
         .event-button:hover {
             background-color: #1257A7;
         }
+@keyframes gradientGlow {
+    0% {
+        background-position: 0% 50%;
+        box-shadow: 0 0 10px #9dcaff;
+    }
+    50% {
+        background-position: 100% 50%;
+        box-shadow: 0 0 20px #67b0ff;
+    }
+    100% {
+        background-position: 0% 50%;
+        box-shadow: 0 0 10px #9dcaff;
+    }
+}
+
+.pass {
+    background: linear-gradient(45deg, #b3ffb5, #ddbbff);
+    background-size: 200% 200%;
+    text-align: center;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    animation: gradientGlow 3s infinite linear;
+    color: rgb(34 62 59);
+}
 
 
   </style>
@@ -191,6 +216,15 @@
         🎈 Join The facebook event of UAP CSE Picnic 2025 🎈
     </a>
 </div>
+      <br>
+
+        <div>
+    <header class="pass">
+      <h1>🎈 Picnic pass collection is now available!!! 🎈</h1>
+      <h3>Collect pass from you CR after payment, earlier the pass higher the priority 😀</h3>
+
+    </header>
+        </div>
     <div class="info-grid">
       <div class="info-card">
         <h2>Seats Left</h2>
@@ -229,7 +263,7 @@
         src="https://docs.google.com/forms/d/e/1FAIpQLSf3GtK65lZrwYFF1R2EIl5t5ffMlgHSa36Ebxtyo3XMYT-vdA/viewform?embedded=true">
       </iframe>
     </div>
-            <h1 align="middle">Contact You CR for Payment After Registration </h1>
+            <h1 align="middle">Contact Your CR for Payment After Registration </h1>
       <br>
   </div>
 
